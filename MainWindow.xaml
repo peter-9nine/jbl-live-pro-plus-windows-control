@@ -1,0 +1,831 @@
+<Window x:Class="JblControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:JblControl"
+        Title="Live Pro+ Control" Width="828" Height="590"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Bg}" FontFamily="Segoe UI" Foreground="{StaticResource Text1}"
+        Icon="pack://application:,,,/Assets/app.ico"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="0" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <Style x:Key="CardM" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+        <Style x:Key="Page" TargetType="Grid">
+            <Setter Property="Margin" Value="26,4,26,24"/>
+        </Style>
+        <Style x:Key="ImageFrame" TargetType="Border">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ============ Barra de titulo + navegacion ============ -->
+        <Grid>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
+                <Image Source="pack://application:,,,/Assets/app.ico" Width="18" Height="18"/>
+                <Path Data="{StaticResource JblLogoGeometry}" Fill="{StaticResource Text1}" Height="13" Stretch="Uniform"
+                      Margin="10,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="LIVE PRO+ TWS" Margin="7,0,0,0" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Text2}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <RadioButton x:Name="TabHome" Style="{StaticResource NavTab}" Content="Home" IsChecked="True" Checked="Tab_Checked"/>
+                <RadioButton x:Name="TabEq" Style="{StaticResource NavTab}" Content="Equalizer" Checked="Tab_Checked"/>
+                <RadioButton x:Name="TabGestures" Style="{StaticResource NavTab}" Content="Gestures" Checked="Tab_Checked"/>
+                <RadioButton x:Name="TabSettings" Style="{StaticResource NavTab}" Content="Settings" Checked="Tab_Checked"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
+                <Button Style="{StaticResource TitleButton}" Content="&#xE921;" ToolTip="Minimize" Click="Minimize_Click"/>
+                <Button Style="{StaticResource TitleCloseButton}" Content="&#xE8BB;" ToolTip="Close" Click="Close_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- =================================================================== INICIO -->
+        <Grid x:Name="PageHome" Grid.Row="1" Style="{StaticResource Page}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel>
+                <!-- Encabezado con la imagen del producto -->
+                <Grid DockPanel.Dock="Top" Margin="4,0,2,10" Height="112">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Width="112" Height="112">
+                        <Grid Visibility="{Binding HasProductInfo, Converter={StaticResource InvBoolToVis}}">
+                            <Ellipse Width="92" Height="92" Fill="{StaticResource Subtle}"/>
+                            <Path Width="26" Height="40" Stretch="Uniform" Stroke="{StaticResource Text3}" StrokeThickness="2.2"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Data="M2,9 L16,23 L9,30 L9,2 L16,9 L2,23"/>
+                        </Grid>
+                        <Image Source="{Binding ProductImage}" RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding HasProductInfo, Converter={StaticResource BoolToVis}}"/>
+                    </Grid>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                        <TextBlock Text="{Binding DeviceName}" FontSize="20" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                     Fill="{Binding State, Converter={StaticResource StateBrush}}"/>
+                            <TextBlock Text="{Binding StatusText}" Margin="7,0,0,0" FontSize="12.5" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Margin="10,0,0,0" FontSize="12.5"
+                                       Visibility="{Binding IsConnected, Converter={StaticResource InvBoolToVis}}">
+                                <Hyperlink Foreground="{StaticResource Accent}" TextDecorations="{x:Null}" Click="Retry_Click">Retry</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{StaticResource Text3}"
+                                   Visibility="{Binding HasProductInfo, Converter={StaticResource BoolToVis}}">
+                            <Run Text="Color: "/><Run Text="{Binding ColorName, Mode=OneWay}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Bateria -->
+                <Border Style="{StaticResource CardM}" DockPanel.Dock="Top" Padding="10,14,10,10">
+                    <StackPanel>
+                        <UniformGrid Columns="3">
+                            <StackPanel HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Grid Width="20" Height="20" VerticalAlignment="Center">
+                                        <Ellipse Stroke="{StaticResource Text2}" StrokeThickness="1.6"/>
+                                        <TextBlock Text="L" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Text2}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding LeftBattery, Converter={StaticResource PctText}}" FontSize="18"
+                                               FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <Path Data="{StaticResource BoltGeometry}" Fill="{StaticResource Good}" Width="8" Height="12"
+                                          Stretch="Uniform" Margin="5,0,0,0" VerticalAlignment="Center"
+                                          Visibility="{Binding LeftCharging, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <ProgressBar Style="{StaticResource BatteryBar}" Margin="0,8,0,0"
+                                             Value="{Binding LeftBattery, Mode=OneWay, Converter={StaticResource PctValue}}"
+                                             Foreground="{Binding LeftBattery, Converter={StaticResource BatteryBrush}}"/>
+                                <TextBlock Text="Left" FontSize="11" Foreground="{StaticResource Text3}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Grid Width="20" Height="20" VerticalAlignment="Center">
+                                        <Ellipse Stroke="{StaticResource Text2}" StrokeThickness="1.6"/>
+                                        <TextBlock Text="R" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Text2}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding RightBattery, Converter={StaticResource PctText}}" FontSize="18"
+                                               FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <Path Data="{StaticResource BoltGeometry}" Fill="{StaticResource Good}" Width="8" Height="12"
+                                          Stretch="Uniform" Margin="5,0,0,0" VerticalAlignment="Center"
+                                          Visibility="{Binding RightCharging, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <ProgressBar Style="{StaticResource BatteryBar}" Margin="0,8,0,0"
+                                             Value="{Binding RightBattery, Mode=OneWay, Converter={StaticResource PctValue}}"
+                                             Foreground="{Binding RightBattery, Converter={StaticResource BatteryBrush}}"/>
+                                <TextBlock Text="Right" FontSize="11" Foreground="{StaticResource Text3}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Center" Background="Transparent"
+                                        ToolTip="The case reports its battery when at least one earbud is inside with the lid open.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Grid Width="22" Height="17" VerticalAlignment="Center">
+                                        <Border Style="{StaticResource ImageFrame}" BorderBrush="{StaticResource Text2}" BorderThickness="1.6" CornerRadius="4"/>
+                                        <Rectangle Height="1.6" Fill="{StaticResource Text2}" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding CaseBattery, Converter={StaticResource PctText}}" FontSize="18"
+                                               FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <Path Data="{StaticResource BoltGeometry}" Fill="{StaticResource Good}" Width="8" Height="12"
+                                          Stretch="Uniform" Margin="5,0,0,0" VerticalAlignment="Center"
+                                          Visibility="{Binding CaseCharging, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <ProgressBar Style="{StaticResource BatteryBar}" Margin="0,8,0,0"
+                                             Value="{Binding CaseBattery, Mode=OneWay, Converter={StaticResource PctValue}}"
+                                             Foreground="{Binding CaseBattery, Converter={StaticResource BatteryBrush}}"/>
+                                <TextBlock Text="Case" FontSize="11" Foreground="{StaticResource Text3}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </UniformGrid>
+                        <Rectangle Height="1" Fill="{StaticResource Line}" Margin="8,10,8,7"/>
+                        <TextBlock HorizontalAlignment="Center" FontSize="12">
+                            <Hyperlink Foreground="{StaticResource Accent}" TextDecorations="{x:Null}" Click="BatteryUsage_Click">View battery usage for this session  ›</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Control de ruido -->
+                <Border Style="{StaticResource CardM}" IsEnabled="{Binding IsConnected}" Margin="0">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Style="{StaticResource SectionTitle}" Text="NOISE CONTROL"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <UniformGrid Columns="3" Margin="20,0">
+                                <RadioButton Style="{StaticResource ModeButton}" Tag="Off"
+                                             IsChecked="{Binding Mode, Converter={StaticResource EnumToBool}, ConverterParameter=Off}">
+                                    <Path Style="{StaticResource ModeIconPath}" Width="24" Height="24" Stretch="None"
+                                          Data="M12,3.5 A8.5,8.5 0 1 1 11.99,3.5 Z M6,6 L18,18"/>
+                                </RadioButton>
+                                <RadioButton Style="{StaticResource ModeButton}" Tag="Noise Cancelling"
+                                             IsChecked="{Binding Mode, Converter={StaticResource EnumToBool}, ConverterParameter=Anc}">
+                                    <TextBlock Text="ANC" FontFamily="Bahnschrift" FontStretch="Condensed" FontWeight="Bold" FontSize="18"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                </RadioButton>
+                                <RadioButton Style="{StaticResource ModeButton}" Tag="Ambient Aware"
+                                             IsChecked="{Binding Mode, Converter={StaticResource EnumToBool}, ConverterParameter=Ambient}">
+                                    <Path Style="{StaticResource ModeIconPath}" Width="30" Height="24" Stretch="None"
+                                          Data="M3,12 A6.5,7 0 1 0 16,12 A6.5,7 0 1 0 3,12 Z M16,5 L16,19 M21,9.5 L21,14.5 M25.5,11 L25.5,13"/>
+                                </RadioButton>
+                            </UniformGrid>
+                            <TextBlock Text="{Binding ModeDescription}" Margin="0,12,0,0" FontSize="12" Foreground="{StaticResource Text2}"
+                                       TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </DockPanel>
+
+            <DockPanel Grid.Column="2">
+                <!-- Smart Audio & Video -->
+                <Border Style="{StaticResource CardM}" DockPanel.Dock="Top" IsEnabled="{Binding IsConnected}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="SMART AUDIO &amp; VIDEO"/>
+                        <Border Style="{StaticResource ImageFrame}" Background="{StaticResource Subtle}" CornerRadius="10" Padding="2" Margin="0,12,0,0">
+                            <UniformGrid Columns="3">
+                                <RadioButton Style="{StaticResource Segment}" Content="Normal" GroupName="Smart" Tag="Normal"
+                                             PreviewMouseLeftButtonDown="Smart_PreviewDown"
+                                             IsChecked="{Binding Smart, Mode=OneWay, Converter={StaticResource EnumToBool}, ConverterParameter=Normal}"/>
+                                <RadioButton Style="{StaticResource Segment}" Content="Audio Mode" GroupName="Smart" Tag="Audio"
+                                             PreviewMouseLeftButtonDown="Smart_PreviewDown"
+                                             IsChecked="{Binding Smart, Mode=OneWay, Converter={StaticResource EnumToBool}, ConverterParameter=Audio}"/>
+                                <RadioButton Style="{StaticResource Segment}" Content="Video Mode" GroupName="Smart" Tag="Video"
+                                             PreviewMouseLeftButtonDown="Smart_PreviewDown"
+                                             IsChecked="{Binding Smart, Mode=OneWay, Converter={StaticResource EnumToBool}, ConverterParameter=Video}"/>
+                            </UniformGrid>
+                        </Border>
+                        <TextBlock Text="{Binding SmartDescription}" Margin="2,10,0,0" FontSize="12" Foreground="{StaticResource Text2}" TextWrapping="Wrap"/>
+                        <Border Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10" Padding="12,9" Margin="0,10,0,0"
+                                Visibility="{Binding Audio.RestoreFailedFlag, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock FontSize="12" TextWrapping="Wrap"
+                                           Text="Windows did not get the earbuds' audio back. Retry, or disconnect and connect the earbuds in Bluetooth settings."/>
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <Button Style="{StaticResource PrimaryButton}" Height="30" Padding="14,0" Content="Retry" Click="AudioRetry_Click"/>
+                                    <Button Style="{StaticResource SecondaryButton}" Height="30" Padding="14,0" Margin="8,0,0,0" Content="Bluetooth settings" Click="BtSettings_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Margin="2,4,0,0" FontSize="11" Foreground="{StaticResource Text3}" TextWrapping="Wrap">
+                            <Run Text="Windows audio: "/><Run Text="{Binding Audio.AudioStatus, Mode=OneWay}" FontWeight="SemiBold"/><Run Text=" · Changing the mode briefly interrupts the audio."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Ecualizador (resumen) -->
+                <Border Style="{StaticResource CardM}" IsEnabled="{Binding IsConnected}" Margin="0">
+                    <DockPanel>
+                        <Grid DockPanel.Dock="Top">
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="EQUALIZER"/>
+                            <TextBlock Text="{Binding EqName}" HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Accent}"/>
+                        </Grid>
+                        <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" FontSize="12" Margin="0,10,0,0">
+                            <Hyperlink Foreground="{StaticResource Accent}" TextDecorations="{x:Null}" Click="EditEq_Click">Edit equalizer  ›</Hyperlink>
+                        </TextBlock>
+                        <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0">
+                            <RadioButton Style="{StaticResource Chip}" Content="Off"
+                                         IsChecked="{Binding EqIndex, Converter={StaticResource IndexToBool}, ConverterParameter=0}"/>
+                            <RadioButton Style="{StaticResource Chip}" Content="Jazz"
+                                         IsChecked="{Binding EqIndex, Converter={StaticResource IndexToBool}, ConverterParameter=1}"/>
+                            <RadioButton Style="{StaticResource Chip}" Content="Vocal"
+                                         IsChecked="{Binding EqIndex, Converter={StaticResource IndexToBool}, ConverterParameter=2}"/>
+                            <RadioButton Style="{StaticResource Chip}" Content="Bass"
+                                         IsChecked="{Binding EqIndex, Converter={StaticResource IndexToBool}, ConverterParameter=3}"/>
+                            <RadioButton Style="{StaticResource Chip}" Content="Custom"
+                                         IsChecked="{Binding EqIndex, Converter={StaticResource IndexToBool}, ConverterParameter=4}"/>
+                        </WrapPanel>
+                        <local:EqGraph Margin="0,10,0,0" Gains="{Binding EqGains}" Accent="{StaticResource AccentColor}"/>
+                    </DockPanel>
+                </Border>
+            </DockPanel>
+        </Grid>
+
+        <!-- =================================================================== ECUALIZADOR -->
+        <Grid x:Name="PageEq" Grid.Row="1" Style="{StaticResource Page}" Visibility="Collapsed">
+            <Border Style="{StaticResource CardM}" Margin="0" IsEnabled="{Binding IsConnected}" Padding="24,18,24,18">
+                <DockPanel>
+                    <Grid DockPanel.Dock="Top">
+                        <StackPanel>
+                            <TextBlock Text="Custom equalizer" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Margin="0,4,0,0" FontSize="12.5" Foreground="{StaticResource Text2}"
+                                       Text="Drag the points up or down. Each change is applied when you release (±6 dB)."/>
+                        </StackPanel>
+                        <TextBlock x:Name="EqSavedText" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12"
+                                   Foreground="{StaticResource Good}" FontWeight="SemiBold" Text="✓ Applied" Opacity="0"/>
+                    </Grid>
+
+                    <Grid DockPanel.Dock="Bottom" Margin="0,14,0,0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Start from:" FontSize="12.5" Foreground="{StaticResource Text2}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <Button Style="{StaticResource SecondaryButton}" Content="Jazz" Height="32" Padding="14,0" Margin="0,0,6,0" Tag="1" Click="EqStartFrom_Click"/>
+                            <Button Style="{StaticResource SecondaryButton}" Content="Vocal" Height="32" Padding="14,0" Margin="0,0,6,0" Tag="2" Click="EqStartFrom_Click"/>
+                            <Button Style="{StaticResource SecondaryButton}" Content="Bass" Height="32" Padding="14,0" Margin="0,0,6,0" Tag="3" Click="EqStartFrom_Click"/>
+                            <Button Style="{StaticResource SecondaryButton}" Content="Flat" Height="32" Padding="14,0" Tag="0" Click="EqStartFrom_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource Text2}" Margin="0,0,12,0">
+                                <Run Text="Active: "/><Run Text="{Binding EqName, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource Text1}"/>
+                            </TextBlock>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Use custom" Click="EqUseCustom_Click"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <local:EqGraph x:Name="EqEditor" Margin="0,18,0,0" Editable="True" RangeDb="6.5"
+                                   Accent="{StaticResource AccentColor}" GainsCommitted="EqEditor_Committed"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- =================================================================== GESTOS -->
+        <Grid x:Name="PageGestures" Grid.Row="1" Style="{StaticResource Page}" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <DataTemplate x:Key="GestureRow">
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="104"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Label}" FontSize="13" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1" Style="{StaticResource Combo}" ItemsSource="{Binding Actions}"
+                                  SelectedItem="{Binding Selected, Mode=TwoWay}"/>
+                    </Grid>
+                </DataTemplate>
+            </Grid.Resources>
+
+            <Border Style="{StaticResource CardM}" Margin="0" IsEnabled="{Binding IsConnected}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Style="{StaticResource SectionTitle}" Text="LEFT EARBUD"/>
+                    <Image DockPanel.Dock="Top" Source="pack://application:,,,/Assets/product/gesture_left.png" Height="150" Margin="0,8,0,12"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Border DockPanel.Dock="Top" Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10"
+                            Padding="12,8" Margin="0,0,0,10" Visibility="{Binding InEarLeft, Converter={StaticResource NotTrueToVis}}">
+                        <TextBlock FontSize="12" TextWrapping="Wrap" Text="Put the left earbud in your ear to change its gestures."/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding LeftGestures}" ItemTemplate="{StaticResource GestureRow}"
+                                  IsEnabled="{Binding InEarLeft, Converter={StaticResource IsTrue}}"/>
+                </DockPanel>
+            </Border>
+            <Border Style="{StaticResource CardM}" Grid.Column="2" Margin="0" IsEnabled="{Binding IsConnected}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Style="{StaticResource SectionTitle}" Text="RIGHT EARBUD"/>
+                    <Image DockPanel.Dock="Top" Source="pack://application:,,,/Assets/product/gesture_right.png" Height="150" Margin="0,8,0,12"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Border DockPanel.Dock="Top" Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10"
+                            Padding="12,8" Margin="0,0,0,10" Visibility="{Binding InEarRight, Converter={StaticResource NotTrueToVis}}">
+                        <TextBlock FontSize="12" TextWrapping="Wrap" Text="Put the right earbud in your ear to change its gestures."/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding RightGestures}" ItemTemplate="{StaticResource GestureRow}"
+                                  IsEnabled="{Binding InEarRight, Converter={StaticResource IsTrue}}"/>
+                </DockPanel>
+            </Border>
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Margin="4,10,4,0" FontSize="11.5" Foreground="{StaticResource Text3}" TextWrapping="Wrap"
+                       Text="Tap and hold still activates the voice assistant. During calls, taps answer and hang up as usual. Changes are saved on the earbuds."/>
+        </Grid>
+
+        <!-- =================================================================== AJUSTES -->
+        <Grid x:Name="PageSettings" Grid.Row="1" Style="{StaticResource Page}" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel>
+                <!-- Find My Buds -->
+                <Border Style="{StaticResource CardM}" DockPanel.Dock="Top" IsEnabled="{Binding IsConnected}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,10,0">
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="FIND MY BUDS"/>
+                            <TextBlock Margin="0,8,0,0" FontSize="12.5" Foreground="{StaticResource Text2}" TextWrapping="Wrap"
+                                       Text="Make an earbud play a loud beep so you can find it."/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Find my earbuds" HorizontalAlignment="Left"
+                                    Margin="0,14,0,0" Click="FindBuds_Click"/>
+                        </StackPanel>
+                        <Image Grid.Column="1" Source="{Binding ProductImage}" Height="96" Width="96" RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding HasProductInfo, Converter={StaticResource BoolToVis}}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Check My Best Fit -->
+                <Border Style="{StaticResource CardM}" DockPanel.Dock="Top" IsEnabled="{Binding IsConnected}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="CHECK MY BEST FIT"/>
+                        <TextBlock Margin="0,8,0,0" FontSize="12.5" Foreground="{StaticResource Text2}" TextWrapping="Wrap"
+                                   Text="Check that the ear tips seal your ears properly for the best sound and noise cancelling."/>
+                        <Button Style="{StaticResource PrimaryButton}" Content="Start test" HorizontalAlignment="Left"
+                                Margin="0,14,0,0" Click="BestFit_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- App -->
+                <Border Style="{StaticResource CardM}" Margin="0">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="APP"/>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,12,0">
+                                <TextBlock Style="{StaticResource RowTitle}" Text="Start with Windows"/>
+                                <TextBlock Style="{StaticResource RowHint}" Text="Opens minimized in the system tray."/>
+                            </StackPanel>
+                            <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding StartWithWindows}"/>
+                        </Grid>
+
+                        <Rectangle Height="1" Fill="{StaticResource Line}" Margin="0,11"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{StaticResource RowTitle}" Text="Close button" VerticalAlignment="Center"/>
+                            <Border Grid.Column="1" Style="{StaticResource ImageFrame}" Background="{StaticResource Subtle}" CornerRadius="10" Padding="2">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Style="{StaticResource Segment}" Content="Ask" Width="62" GroupName="CloseAct"
+                                                 IsChecked="{Binding CloseAction, Converter={StaticResource IndexToBool}, ConverterParameter=0}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="Tray" Width="62" GroupName="CloseAct"
+                                                 IsChecked="{Binding CloseAction, Converter={StaticResource IndexToBool}, ConverterParameter=1}"/>
+                                    <RadioButton Style="{StaticResource Segment}" Content="Exit" Width="62" GroupName="CloseAct"
+                                                 IsChecked="{Binding CloseAction, Converter={StaticResource IndexToBool}, ConverterParameter=2}"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+
+            <DockPanel Grid.Column="2">
+                <!-- Ajustes -->
+                <Border Style="{StaticResource CardM}" DockPanel.Dock="Top">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="SETTINGS"/>
+
+                        <Grid Margin="0,12,0,0" IsEnabled="{Binding IsConnected}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,12,0">
+                                <TextBlock Style="{StaticResource RowTitle}" Text="Auto pause"/>
+                                <TextBlock Style="{StaticResource RowHint}" Text="Pauses music when you take an earbud out."/>
+                            </StackPanel>
+                            <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AutoPause}"/>
+                        </Grid>
+
+                        <Rectangle Height="1" Fill="{StaticResource Line}" Margin="0,11"/>
+
+                        <Grid IsEnabled="{Binding IsConnected}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Style="{StaticResource RowTitle}" Text="Auto power off"/>
+                                <TextBlock Style="{StaticResource RowHint}" Text="Turns the earbuds off when not in use."/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center"
+                                        IsEnabled="{Binding AutoOffOn}">
+                                <Button Style="{StaticResource RoundButton}" Content="−" Click="AutoOffMinus_Click"/>
+                                <TextBlock Width="54" TextAlignment="Center" VerticalAlignment="Center" FontSize="12.5" FontWeight="SemiBold">
+                                    <Run Text="{Binding AutoOffMinutes, Mode=OneWay}"/><Run Text=" min"/>
+                                </TextBlock>
+                                <Button Style="{StaticResource RoundButton}" Content="+" Click="AutoOffPlus_Click"/>
+                            </StackPanel>
+                            <CheckBox Grid.Column="2" Style="{StaticResource Switch}" IsChecked="{Binding AutoOffOn}"/>
+                        </Grid>
+
+                        <Rectangle Height="1" Fill="{StaticResource Line}" Margin="0,11"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Style="{StaticResource RowTitle}" Text="Safe volume"/>
+                                <TextBlock Style="{StaticResource RowHint}" Text="Caps Windows volume when the earbuds' audio reconnects."/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0" VerticalAlignment="Center"
+                                        IsEnabled="{Binding Audio.SafeVolumeEnabled}">
+                                <Button Style="{StaticResource RoundButton}" Content="−" Click="SafeVolMinus_Click"/>
+                                <TextBlock Width="46" TextAlignment="Center" VerticalAlignment="Center" FontSize="12.5" FontWeight="SemiBold">
+                                    <Run Text="{Binding Audio.SafeVolumeLevel, Mode=OneWay}"/><Run Text="%"/>
+                                </TextBlock>
+                                <Button Style="{StaticResource RoundButton}" Content="+" Click="SafeVolPlus_Click"/>
+                            </StackPanel>
+                            <CheckBox Grid.Column="2" Style="{StaticResource Switch}" IsChecked="{Binding Audio.SafeVolumeEnabled}"/>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- Informacion -->
+                <Border Style="{StaticResource CardM}" Margin="0">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="ABOUT"/>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="23"/>
+                                <RowDefinition Height="23"/>
+                                <RowDefinition Height="23"/>
+                                <RowDefinition Height="23"/>
+                                <RowDefinition Height="23"/>
+                            </Grid.RowDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="12.5"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </Grid.Resources>
+                            <TextBlock Text="Model" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DeviceName}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Text="Color" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ColorName}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="2" Text="Firmware" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Firmware}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="3" Text="Address" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Mac}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="4" Text="Windows audio" Foreground="{StaticResource Text2}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Audio.AudioStatus}" FontWeight="SemiBold"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Grid>
+
+        <!-- =================================================================== AVISO DE VOLUMEN -->
+        <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20"
+                Style="{StaticResource ImageFrame}" Background="#282F36" CornerRadius="20" Padding="16,9"
+                Visibility="{Binding VolumeNotice, Converter={StaticResource NotNullToVis}}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.25"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal">
+                <Path Width="16" Height="14" Stretch="Uniform" Fill="White" VerticalAlignment="Center"
+                      Data="M0,5 L4,5 L9,0 L9,16 L4,11 L0,11 Z M11.5,4.5 Q14,8 11.5,11.5 L12.6,12.6 Q16,8 12.6,3.4 Z"/>
+                <TextBlock Text="{Binding VolumeNotice}" Foreground="White" FontSize="12.5" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- =================================================================== DIALOGOS -->
+        <!-- Cubre toda la ventana (tambien la barra de titulo) para que el oscurecido sea uniforme -->
+        <Grid x:Name="Overlay" Grid.Row="0" Grid.RowSpan="2" Visibility="Collapsed">
+            <Rectangle Fill="#66282F36"/>
+            <Border Style="{StaticResource CardM}" x:Name="DialogCard" Width="480" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Margin="0,30,0,0" Padding="28,24" CornerRadius="18" BorderThickness="0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="6" Direction="270" Opacity="0.18"/>
+                </Border.Effect>
+                <Grid>
+                    <!-- Cerrar: bandeja o salir -->
+                    <StackPanel x:Name="ClosePanel" Visibility="Collapsed">
+                        <TextBlock Text="Close Live Pro+ Control?" FontSize="19" FontWeight="Bold"/>
+                        <TextBlock Margin="0,8,0,0" FontSize="13" Foreground="{StaticResource Text2}" TextWrapping="Wrap" LineHeight="19"
+                                   Text="Keep it running in the system tray to change modes quickly and protect your hearing when the audio reconnects, or exit the app completely."/>
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Remember my choice" FontSize="13" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="CloseRemember" Grid.Column="1" Style="{StaticResource Switch}"/>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Margin="0,0,10,0" Click="CloseOverlay_Click"/>
+                            <Button Style="{StaticResource SecondaryButton}" Content="Exit" Margin="0,0,10,0" Click="CloseExit_Click"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Minimize to tray" Click="CloseTray_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Smart Audio & Video: confirmacion -->
+                    <StackPanel x:Name="SmartConfirm" Visibility="Collapsed">
+                        <TextBlock x:Name="SmartConfirmTitle" Text="Change audio mode?" FontSize="19" FontWeight="Bold"/>
+                        <TextBlock Margin="0,8,0,0" FontSize="13" Foreground="{StaticResource Text2}" TextWrapping="Wrap" LineHeight="19"
+                                   Text="The earbuds restart their audio link to apply the new mode. Windows loses the earbuds' audio for a few seconds; Live Pro+ Control reconnects it automatically."/>
+                        <Border Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10" Padding="14,10" Margin="0,14,0,0">
+                            <TextBlock x:Name="SmartConfirmVolume" FontSize="12.5" TextWrapping="Wrap" LineHeight="18"/>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Margin="0,0,10,0" Click="CloseOverlay_Click"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Change mode" Click="SmartConfirm_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Find My Buds: aviso -->
+                    <StackPanel x:Name="FindWarn" Visibility="Collapsed">
+                        <Grid Width="52" Height="52" HorizontalAlignment="Left">
+                            <Ellipse Fill="{StaticResource AccentSoft}"/>
+                            <Path Data="M12,2 L23,21 L1,21 Z M12,9 L12,14 M12,17.2 L12,17.4" Stroke="{StaticResource Accent}" StrokeThickness="2"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Width="24" Height="24" Stretch="None"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="Before you continue" FontSize="19" FontWeight="Bold" Margin="0,14,0,0"/>
+                        <TextBlock Margin="0,8,0,0" FontSize="13" Foreground="{StaticResource Text2}" TextWrapping="Wrap" LineHeight="19"
+                                   Text="The earbud will play a very loud beep at full volume so you can find it."/>
+                        <Border Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10" Padding="14,10" Margin="0,14,0,0">
+                            <TextBlock FontSize="12.5" TextWrapping="Wrap" Foreground="{StaticResource Text1}" LineHeight="18"
+                                       Text="Take the earbuds out of your ears before continuing. Hearing the beep while wearing them may damage your hearing."/>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Margin="0,0,10,0" Click="CloseOverlay_Click"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="They are out, continue" Click="FindContinue_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Find My Buds: control -->
+                    <StackPanel x:Name="FindPanel" Visibility="Collapsed">
+                        <StackPanel.Resources>
+                            <Style x:Key="BudButton" TargetType="Button">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Focusable" Value="False"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="B" CornerRadius="14" Background="{StaticResource Subtle}" Padding="10,12"
+                                                    BorderThickness="2" BorderBrush="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="B" Property="Background" Value="{StaticResource SubtleHover}"/>
+                                                </Trigger>
+                                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                    <Setter TargetName="B" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                                                    <Setter TargetName="B" Property="Background" Value="{StaticResource AccentSoft}"/>
+                                                </DataTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="Find My Buds" FontSize="19" FontWeight="Bold"/>
+                        <TextBlock Margin="0,6,0,0" FontSize="12.5" Foreground="{StaticResource Text2}" TextWrapping="Wrap"
+                                   Text="Click an earbud to start or stop the beep."/>
+                        <UniformGrid Columns="2" Margin="0,16,0,0">
+                            <Button Style="{StaticResource BudButton}" Margin="0,0,8,0" Click="BeepLeft_Click"
+                                    Tag="{Binding BeepLeft}">
+                                <StackPanel>
+                                    <Image Source="pack://application:,,,/Assets/product/find_left.png" Height="120" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12.5" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Left · Silent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding BeepLeft}" Value="True">
+                                                        <Setter Property="Text" Value="Left · Beeping"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource BudButton}" Margin="8,0,0,0" Click="BeepRight_Click"
+                                    Tag="{Binding BeepRight}">
+                                <StackPanel>
+                                    <Image Source="pack://application:,,,/Assets/product/find_right.png" Height="120" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12.5" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Right · Silent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding BeepRight}" Value="True">
+                                                        <Setter Property="Text" Value="Right · Beeping"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Stop all" Margin="0,0,10,0" Click="StopBeeps_Click"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Done" Click="CloseOverlay_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Check My Best Fit (como CheckMyBestFitFragment de la app) -->
+                    <StackPanel x:Name="FitPanel" Visibility="Collapsed">
+                        <Grid>
+                            <TextBlock Text="Check my best fit" FontSize="19" FontWeight="Bold"/>
+                            <TextBlock x:Name="FitHowLink" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12">
+                                <Hyperlink Foreground="{StaticResource Accent}" TextDecorations="{x:Null}" Click="FitHow_Click">
+                                    <Run x:Name="FitHowText" Text="Show me how"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </Grid>
+
+                        <Grid Height="212" Margin="0,14,0,0">
+                            <!-- Circulo con el producto y anillo de resultado -->
+                            <Grid x:Name="FitCircleArea" Width="190" Height="190" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                <Ellipse Fill="White">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="18" ShadowDepth="2" Direction="270" Opacity="0.08"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                                <Image x:Name="FitImage" Margin="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Ellipse x:Name="FitRingFull" Stroke="#76C411" StrokeThickness="4" Margin="5" Visibility="Collapsed"/>
+                                <Path x:Name="FitRingLeft" Stroke="#76C411" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Data="M95,183 A88,88 0 0 1 95,7" Visibility="Collapsed"/>
+                                <Path x:Name="FitRingRight" Stroke="#76C411" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Data="M95,7 A88,88 0 0 1 95,183" Visibility="Collapsed"/>
+                                <!-- Midiendo: arco naranja girando -->
+                                <Path x:Name="FitSpinner" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Data="M95,7 A88,88 0 0 1 183,95" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
+                                    <Path.Stroke>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#00FF5901" Offset="0"/>
+                                            <GradientStop Color="#FFFF5901" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Path.Stroke>
+                                    <Path.RenderTransform>
+                                        <RotateTransform x:Name="FitSpinnerRotate" Angle="0"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                            <!-- Etiquetas L / R -->
+                            <StackPanel x:Name="FitLabels" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                <Grid Width="20" Height="20" Margin="0,0,58,0">
+                                    <Ellipse Stroke="{StaticResource Text2}" StrokeThickness="1.6"/>
+                                    <TextBlock Text="L" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Width="20" Height="20">
+                                    <Ellipse Stroke="{StaticResource Text2}" StrokeThickness="1.6"/>
+                                    <TextBlock Text="R" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Como ponerse los auriculares (animacion de la app) -->
+                            <Border x:Name="FitHowArea" Style="{StaticResource ImageFrame}" Background="{StaticResource Subtle}" CornerRadius="14"
+                                    ClipToBounds="True" Visibility="Collapsed">
+                                <Viewbox Height="206">
+                                    <Canvas Width="750" Height="648">
+                                        <Image Source="pack://application:,,,/Assets/product/fit_ear.png" Canvas.Left="200" Canvas.Top="26" Width="349" Height="596"/>
+                                        <Image x:Name="FitAnimBud" Source="pack://application:,,,/Assets/product/fit_bud.png" Width="231" Height="354" Opacity="0">
+                                            <Image.RenderTransform>
+                                                <TransformGroup>
+                                                    <RotateTransform CenterX="115.75" CenterY="177.25" Angle="-5"/>
+                                                    <TranslateTransform X="9.25" Y="277.75"/>
+                                                </TransformGroup>
+                                            </Image.RenderTransform>
+                                        </Image>
+                                        <Path x:Name="FitAnimArrow" Stroke="{StaticResource Accent}" StrokeThickness="9" StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round" StrokeLineJoin="Round" Opacity="0"
+                                              Data="M520,372 A125,125 0 0 0 330,392 M330,392 L322,358 M330,392 L364,398">
+                                            <Path.RenderTransform>
+                                                <RotateTransform CenterX="430" CenterY="480" Angle="32"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                        <Canvas.Triggers>
+                                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                                <BeginStoryboard>
+                                                    <Storyboard RepeatBehavior="Forever" Duration="0:0:4.6">
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimBud" Storyboard.TargetProperty="Opacity">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0.44" Value="0"/>
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:4.4" Value="1"/>
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:4.6" Value="0"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimBud"
+                                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="9.25"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0.44" Value="9.25"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:1.36" Value="288.25" KeySpline="0.33,0 0.67,1"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:2.44" Value="288.25"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:3.12" Value="313.25" KeySpline="0.33,0 0.67,1"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimBud"
+                                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="277.75"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0.44" Value="277.75"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:1.36" Value="284.75" KeySpline="0.33,0 0.67,1"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:2.44" Value="284.75"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:3.12" Value="303.75" KeySpline="0.33,0 0.67,1"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimBud"
+                                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-5"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:2.44" Value="-5"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:2.84" Value="-38" KeySpline="0.33,0 0.67,1"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimArrow" Storyboard.TargetProperty="Opacity">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:2.0" Value="0"/>
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:2.44" Value="1"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:3.6" Value="1"/>
+                                                            <LinearDoubleKeyFrame KeyTime="0:0:3.9" Value="0"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FitAnimArrow"
+                                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)">
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="32"/>
+                                                            <DiscreteDoubleKeyFrame KeyTime="0:0:2.44" Value="32"/>
+                                                            <SplineDoubleKeyFrame KeyTime="0:0:2.84" Value="0" KeySpline="0.33,0 0.67,1"/>
+                                                        </DoubleAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Canvas.Triggers>
+                                    </Canvas>
+                                </Viewbox>
+                            </Border>
+                        </Grid>
+
+                        <TextBlock x:Name="FitText" Margin="0,14,0,0" FontSize="12.5" Foreground="{StaticResource Text2}" TextWrapping="Wrap" LineHeight="18"/>
+                        <TextBlock x:Name="FitTesting" Text="Testing..." Margin="0,6,0,0" FontSize="12.5" FontWeight="SemiBold" Visibility="Collapsed"/>
+                        <Border x:Name="FitWearHint" Style="{StaticResource ImageFrame}" Background="{StaticResource AccentSoft}" CornerRadius="10" Padding="12,8" Margin="0,10,0,0"
+                                Visibility="{Binding BothInEar, Converter={StaticResource InvBoolToVis}}">
+                            <TextBlock FontSize="12" TextWrapping="Wrap" Text="Put both earbuds in your ears to start the test."/>
+                        </Border>
+                        <StackPanel x:Name="FitButtons" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                            <Button x:Name="FitCancelBtn" Style="{StaticResource SecondaryButton}" Content="Cancel" Margin="0,0,10,0" Click="CloseOverlay_Click"/>
+                            <Button x:Name="FitStartBtn" Style="{StaticResource PrimaryButton}" Content="Start" Click="FitStart_Click" IsEnabled="{Binding BothInEar}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

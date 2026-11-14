@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    .NET Framework 4.8: viene preinstalado en Windows 10 (1903+) y Windows 11,
+    y trae integrado el acceso a las APIs WinRT (Bluetooth LE). El .exe resultante
+    no necesita instalar nada ni empaquetar librerias.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>JblControl</RootNamespace>
+    <AssemblyName>LiveProPlusControl</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Product>Live Pro+ Control</Product>
+    <AssemblyTitle>Live Pro+ Control</AssemblyTitle>
+    <Description>Control para JBL LIVE PRO+ TWS en Windows</Description>
+    <Version>1.0.0</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Metadatos WinRT (Windows.winmd) para .NET Framework; en ejecucion los provee Windows -->
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Net.Http" />
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\product\*.png" />
+  </ItemGroup>
+
+</Project>

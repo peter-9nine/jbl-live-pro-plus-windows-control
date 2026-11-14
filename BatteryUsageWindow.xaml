@@ -1,0 +1,155 @@
+﻿<Window x:Class="JblControl.BatteryUsageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:JblControl"
+        Title="Battery usage" Width="668" Height="598"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource Bg}" FontFamily="Segoe UI" Foreground="{StaticResource Text1}"
+        Icon="pack://application:,,,/Assets/app.ico"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36" ResizeBorderThickness="0" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <Style x:Key="CardM" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+        <Style x:Key="TileLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Foreground" Value="{StaticResource Text2}"/>
+        </Style>
+        <Style x:Key="TileValue" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+        <Style x:Key="ModeBar" TargetType="ProgressBar" BasedOn="{StaticResource BatteryBar}">
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Maximum" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Barra de titulo -->
+        <Grid>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
+                <Image Source="pack://application:,,,/Assets/app.ico" Width="16" Height="16"/>
+                <TextBlock Text="Battery usage" Margin="8,0,0,0" FontSize="12" Foreground="{StaticResource Text2}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Button Style="{StaticResource TitleCloseButton}" Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" ToolTip="Close" Click="Close_Click"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="26,4,26,22">
+            <!-- Encabezado -->
+            <Grid Margin="6,0,6,14">
+                <StackPanel>
+                    <TextBlock Text="Battery usage" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Margin="0,4,0,0" FontSize="12.5" Foreground="{StaticResource Text2}">
+                        <Run Text="This session · "/><Run Text="{Binding SessionStartText, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="12.5">
+                    <Hyperlink Foreground="{StaticResource Accent}" TextDecorations="{x:Null}" Click="Reset_Click">Reset session</Hyperlink>
+                </TextBlock>
+            </Grid>
+
+            <!-- Indicadores -->
+            <Border Style="{StaticResource CardM}" Padding="18,14">
+                <UniformGrid Columns="4">
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource TileLabel}" Text="Time connected"/>
+                        <TextBlock Style="{StaticResource TileValue}" Text="{Binding ConnectedText, Mode=OneWay}"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource TileLabel}" Text="Used"/>
+                        <TextBlock Style="{StaticResource TileValue}" Text="{Binding ConsumedText, Mode=OneWay}"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource TileLabel}" Text="Drain rate"/>
+                        <TextBlock Style="{StaticResource TileValue}" Text="{Binding RateText, Mode=OneWay}"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource TileLabel}" Text="Estimated remaining"/>
+                        <TextBlock Style="{StaticResource TileValue}" Text="{Binding RemainingText, Mode=OneWay}" Foreground="{StaticResource Accent}"/>
+                    </StackPanel>
+                </UniformGrid>
+            </Border>
+
+            <!-- Grafica -->
+            <Border Style="{StaticResource CardM}" Padding="16,14,12,10">
+                <StackPanel>
+                    <Grid Margin="4,0,4,8">
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="BATTERY LEVEL"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Ellipse Width="8" Height="8" Fill="#FF5901" VerticalAlignment="Center"/>
+                            <TextBlock Text="Left" FontSize="11.5" Foreground="{StaticResource Text2}" Margin="5,0,14,0"/>
+                            <Ellipse Width="8" Height="8" Fill="#4C596B" VerticalAlignment="Center"/>
+                            <TextBlock Text="Right" FontSize="11.5" Foreground="{StaticResource Text2}" Margin="5,0,14,0"/>
+                            <Line X1="0" X2="12" Y1="0" Y2="0" Stroke="#2E98FA" StrokeThickness="2" StrokeDashArray="1.25,1" VerticalAlignment="Center"/>
+                            <TextBlock Text="Case" FontSize="11.5" Foreground="{StaticResource Text2}" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                    <local:BatteryChart x:Name="Chart" Height="160"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Tiempo por modo -->
+            <Border Style="{StaticResource CardM}" Margin="0">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="TIME PER NOISE MODE"/>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26"/>
+                            <RowDefinition Height="26"/>
+                        </Grid.RowDefinitions>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="12.5"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <TextBlock Text="Noise Cancelling" Width="118"/>
+                        <ProgressBar Grid.Column="1" Style="{StaticResource ModeBar}" Value="{Binding ModeAncShare, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding ModeAncText, Mode=OneWay}" TextAlignment="Right" FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Column="4" Text="Ambient Aware" Width="100"/>
+                        <ProgressBar Grid.Column="5" Style="{StaticResource ModeBar}" Value="{Binding ModeAmbientShare, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="6" Text="{Binding ModeAmbientText, Mode=OneWay}" TextAlignment="Right" FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1" Text="TalkThru" Width="118"/>
+                        <ProgressBar Grid.Row="1" Grid.Column="1" Style="{StaticResource ModeBar}" Value="{Binding ModeTalkShare, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ModeTalkText, Mode=OneWay}" TextAlignment="Right" FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="4" Text="Off" Width="100"/>
+                        <ProgressBar Grid.Row="1" Grid.Column="5" Style="{StaticResource ModeBar}" Value="{Binding ModeOffShare, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding ModeOffText, Mode=OneWay}" TextAlignment="Right" FontWeight="SemiBold"/>
+                    </Grid>
+                    <TextBlock Margin="0,10,0,0" FontSize="11" Foreground="{StaticResource Text3}" TextWrapping="Wrap"
+                               Text="The earbuds report battery in steps, so the drain rate and remaining time are estimates that improve over time. The history is cleared when the app closes."/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>
