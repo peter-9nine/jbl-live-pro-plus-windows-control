@@ -13,7 +13,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>JblControl</RootNamespace>
+    <RootNamespace>LiveProPlusControl</RootNamespace>
     <AssemblyName>LiveProPlusControl</AssemblyName>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>

@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 public partial class BatteryUsageWindow : Window
 {

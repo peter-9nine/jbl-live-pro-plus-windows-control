@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 public partial class App : Application
 {

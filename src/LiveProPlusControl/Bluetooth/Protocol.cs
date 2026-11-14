@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>
 /// Protocolo de control de JBL LIVE PRO+ TWS (chip BES, "VERSION_OLD"),

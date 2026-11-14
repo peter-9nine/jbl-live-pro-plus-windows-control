@@ -6,7 +6,7 @@ namespace System.Runtime.CompilerServices
     internal static class IsExternalInit { }
 }
 
-namespace JblControl
+namespace LiveProPlusControl
 {
     internal static class Util
     {

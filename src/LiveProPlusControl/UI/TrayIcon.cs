@@ -2,7 +2,7 @@ using System.ComponentModel;
 using SD = System.Drawing;
 using WF = System.Windows.Forms;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Icono en la bandeja del sistema con menu de acceso rapido.</summary>
 public sealed class TrayIcon : IDisposable

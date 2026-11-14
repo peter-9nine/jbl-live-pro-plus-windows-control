@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Esquinas redondeadas nativas de Windows 11 (sin relleno negro detras de las esquinas).</summary>
 public static class WindowStyling

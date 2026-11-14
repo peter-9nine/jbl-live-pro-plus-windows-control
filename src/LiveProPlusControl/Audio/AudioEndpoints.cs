@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>
 /// Acceso a las salidas de audio de Windows (Core Audio) de los auriculares:

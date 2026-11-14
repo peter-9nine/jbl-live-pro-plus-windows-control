@@ -2,7 +2,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Win32;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Configuracion persistente en %AppData%\LiveProPlusControl\settings.ini (clave=valor).</summary>
 public sealed class AppSettings

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Windows.Threading;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>
 /// Protege el oido y mantiene el audio de Windows.

@@ -8,7 +8,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 public partial class MainWindow : Window
 {

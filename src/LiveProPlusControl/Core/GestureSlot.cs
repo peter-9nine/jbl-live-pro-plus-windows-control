@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Un gesto configurable (p.ej. "doble toque izquierdo") y su accion.</summary>
 public sealed class GestureSlot : INotifyPropertyChanged

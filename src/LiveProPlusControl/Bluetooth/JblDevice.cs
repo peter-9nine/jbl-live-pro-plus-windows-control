@@ -3,7 +3,7 @@ using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Security.Cryptography;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Conexion BLE a los audifonos usando la API WinRT de Windows.</summary>
 public sealed class JblDevice : IDisposable

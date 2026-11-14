@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Windows.Devices.Bluetooth;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 public enum ConnectionState { Disconnected, Searching, Connected }
 

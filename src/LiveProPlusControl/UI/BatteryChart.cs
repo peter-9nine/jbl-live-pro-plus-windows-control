@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>
 /// Grafica de nivel de bateria (L, R, estuche) a lo largo de la sesion.

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>
 /// Curva del ecualizador de 10 bandas (estilo de la app de JBL).

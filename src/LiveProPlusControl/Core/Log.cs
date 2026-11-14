@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Registro de diagnostico en %LocalAppData%\LiveProPlusControl\log.txt (se reinicia en cada arranque).</summary>
 public static class Log

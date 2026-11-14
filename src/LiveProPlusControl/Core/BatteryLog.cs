@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 public sealed record BatterySample(DateTime Time, int? Left, int? Right, int? Case,
                                    bool LeftCharging, bool RightCharging, bool CaseCharging);

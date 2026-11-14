@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace JblControl;
+namespace LiveProPlusControl;
 
 /// <summary>Enum ↔ RadioButton.IsChecked (ConverterParameter = nombre del valor).</summary>
 public sealed class EnumToBoolConverter : IValueConverter
